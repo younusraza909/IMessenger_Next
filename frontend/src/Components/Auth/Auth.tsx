@@ -11,7 +11,12 @@ interface IAuthProps {
 const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
   const [username, setUsername] = useState("");
 
-  const onSubmit = () => {};
+  const onSubmit = () => {
+    try {
+    } catch (err) {
+      console.log("error", err);
+    }
+  };
   return (
     <Center height="100vh">
       <Stack spacing={8} align="center">
