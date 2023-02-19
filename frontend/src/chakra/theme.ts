@@ -2,24 +2,21 @@ import { extendTheme, type ThemeConfig } from "@chakra-ui/react";
 
 const config: ThemeConfig = {
   initialColorMode: "dark",
-  useSystemColorMode: false,
+  useSystemColorMode: true,
 };
 
-export const theme = extendTheme(
-  { config },
-  {
-    colors: {
-      brand: {
-        100: "#3d84f7",
+export const theme = extendTheme({
+  config,
+  colors: {
+    brand: {
+      100: "#3D84F7",
+    },
+  },
+  styles: {
+    global: () => ({
+      body: {
+        bg: "whiteAlpha.200",
       },
-    },
-    //   Appling background color on entire body of application
-    styles: {
-      global: () => ({
-        body: {
-          bg: "whiteAlpha.200",
-        },
-      }),
-    },
-  }
-);
+    }),
+  },
+});
