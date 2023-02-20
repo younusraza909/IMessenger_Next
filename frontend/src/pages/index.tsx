@@ -5,6 +5,7 @@ import Auth from "../Components/Auth/Auth";
 import Chat from "../Components/Chat/Chat";
 
 const Home: NextPage = () => {
+  // Because we have pre fetched session so use Session will have immediate acces to it
   const { data: session } = useSession();
   console.log("Here is the data", session);
 
