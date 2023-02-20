@@ -1,6 +1,10 @@
-interface ConversationListProps {}
+import { Session } from "next-auth";
 
-const ConversationList: React.FC<ConversationListProps> = () => {
+interface ConversationListProps {
+  session: Session;
+}
+
+const ConversationList: React.FC<ConversationListProps> = ({ session }) => {
   return <div>Make a good code</div>;
 };
 
