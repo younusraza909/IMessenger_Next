@@ -16,6 +16,7 @@ export interface User {
   email: string;
   name: string;
   username: string;
+  emailVerified: boolean;
 }
 export interface createUsernameResponse {
   success?: boolean;
