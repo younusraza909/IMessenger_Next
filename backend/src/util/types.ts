@@ -13,6 +13,8 @@ export interface Session {
 export interface User {
   id: string;
   image: string;
+  email: string;
+  name: string;
   username: string;
 }
 export interface createUsernameResponse {

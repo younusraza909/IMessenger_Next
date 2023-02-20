@@ -11,7 +11,7 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 import { getSession } from "next-auth/react";
 
 import * as dotenv from "dotenv";
-import { GraphQlContext } from "./util/types";
+import { GraphQlContext, Session } from "./util/types";
 
 import { PrismaClient } from "@prisma/client";
 
@@ -38,7 +38,7 @@ async function main() {
     // when client connect with server the next-auth will send session cookie so we will make it a context so whole graphql app have access it
     context: async ({ req, res }): Promise<GraphQlContext> => {
       // This get session  is essential frontend function but can be use here
-      const session = await getSession({ req });
+      const session = (await getSession({ req })) as Session;
       console.log("Session", session);
       return { session, prisma };
     },
