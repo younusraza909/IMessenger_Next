@@ -19,7 +19,11 @@ const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
     CreateUsernameVariables
   >(UserOperations?.Mutations.createusername);
 
+  console.log("HERE IS THE DATA ", data, error, loading);
+
   const onSubmit = async () => {
+    console.log("username", username);
+    if (!username) return;
     try {
       await createUsername({ variables: { username } });
     } catch (err) {
@@ -37,7 +41,7 @@ const Auth: React.FC<IAuthProps> = ({ session, reloadSession }) => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
-            <Button width="100%" onClick={() => onSubmit}>
+            <Button width="100%" onClick={onSubmit}>
               Save
             </Button>
           </>
