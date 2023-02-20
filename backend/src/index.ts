@@ -13,6 +13,8 @@ import { getSession } from "next-auth/react";
 import * as dotenv from "dotenv";
 import { GraphQlContext } from "./util/types";
 
+import { PrismaClient } from "@prisma/client";
+
 async function main() {
   dotenv.config();
   const app = express();
@@ -27,6 +29,8 @@ async function main() {
     credentials: true,
   };
 
+  const prisma = new PrismaClient();
+
   const server = new ApolloServer({
     schema,
     csrfPrevention: true,
@@ -36,7 +40,7 @@ async function main() {
       // This get session  is essential frontend function but can be use here
       const session = await getSession({ req });
       console.log("Session", session);
-      return { session };
+      return { session, prisma };
     },
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer }),
