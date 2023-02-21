@@ -32,6 +32,8 @@ const ConversationModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
     // Search User Query
   };
 
+  console.log("data", data);
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -47,7 +49,11 @@ const ConversationModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                 />
-                <Button type="submit" isDisabled={!username}>
+                <Button
+                  type="submit"
+                  isDisabled={!username}
+                  isLoading={loading}
+                >
                   Search
                 </Button>
               </Stack>
