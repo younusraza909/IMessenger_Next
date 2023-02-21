@@ -32,7 +32,7 @@ const resolvers = {
         });
 
         return users;
-      } catch (error) {
+      } catch (error: any) {
         console.log("search user  error", error);
         throw new ApolloError(error?.message);
       }
