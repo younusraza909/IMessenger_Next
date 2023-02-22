@@ -6,10 +6,10 @@ const resolvers = {
   Query: {},
   Mutation: {
     createConversation: async (
-      _,
+      _: any,
       args: { participantIds: [String] },
       context: GraphQlContext
-    ) => {
+    ): Promise<{ conversationId: String }> => {
       const { session, prisma } = context;
       const { participantIds } = args;
 
@@ -35,6 +35,12 @@ const resolvers = {
           },
           include: conversationPopulated,
         });
+
+        // emit a CONVERSATION_CREATED event using pub_sub
+
+        return {
+          conversationId: conversation.id,
+        };
       } catch (error) {
         console.log("Create Conversation Error", error);
         throw new ApolloError("Error creating conversation");
