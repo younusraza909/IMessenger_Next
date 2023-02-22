@@ -1,5 +1,6 @@
 import { GraphQlContext } from "../../util/types";
 import { ApolloError } from "apollo-server-core";
+import { Prisma } from "@prisma/client";
 
 const resolvers = {
   Query: {},
@@ -32,28 +33,7 @@ const resolvers = {
               },
             },
           },
-          include: {
-            participants: {
-              include: {
-                user: {
-                  select: {
-                    id: true,
-                    username: true,
-                  },
-                },
-              },
-            },
-            latestMessage: {
-              include: {
-                sender: {
-                  select: {
-                    id: true,
-                    username: true,
-                  },
-                },
-              },
-            },
-          },
+          include: conversationPopulated,
         });
       } catch (error) {
         console.log("Create Conversation Error", error);
@@ -62,5 +42,33 @@ const resolvers = {
     },
   },
 };
+
+// This is not a simple object in prisma after running that generate command it gives us this type
+export const participantPopulated =
+  Prisma.validator<Prisma.ConversationParticipantInclude>()({
+    user: {
+      select: {
+        id: true,
+        username: true,
+      },
+    },
+  });
+
+export const conversationPopulated =
+  Prisma.validator<Prisma.ConversationInclude>()({
+    participants: {
+      include: participantPopulated,
+    },
+    latestMessage: {
+      include: {
+        sender: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+      },
+    },
+  });
 
 export default resolvers;
