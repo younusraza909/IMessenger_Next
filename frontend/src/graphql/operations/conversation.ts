@@ -22,7 +22,6 @@ conversations {
   updatedAt
 }
 `;
-
 export default {
   Queries: {
     conversation: gql`
