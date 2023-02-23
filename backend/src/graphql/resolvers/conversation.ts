@@ -1,6 +1,7 @@
 import { ConversationPopulated, GraphQlContext } from "../../util/types";
 import { ApolloError } from "apollo-server-core";
 import { Prisma } from "@prisma/client";
+import { withFilter } from "graphql-subscriptions";
 
 const resolvers = {
   Query: {
@@ -99,14 +100,36 @@ const resolvers = {
   },
   Subscription: {
     conversationCreated: {
-      subscribe: (_: any, __: any, context: GraphQlContext) => {
-        let { pubsub } = context;
+      subscribe: withFilter(
+        (_: any, __: any, context: GraphQlContext) => {
+          let { pubsub } = context;
 
-        return pubsub.asyncIterator("CONVERSATION_CREATED");
-      },
+          return pubsub.asyncIterator("CONVERSATION_CREATED");
+        },
+        (
+          payload: ConversationCreatedSubscriptionPayload,
+          _,
+          context: GraphQlContext
+        ) => {
+          const { session } = context;
+          const {
+            conversationCreated: { participants },
+          } = payload;
+
+          const userIsParticipant = !!participants.find(
+            (participant) => participant.userId === session?.user?.id
+          );
+
+          return userIsParticipant;
+        }
+      ),
     },
   },
 };
+
+export interface ConversationCreatedSubscriptionPayload {
+  conversationCreated: ConversationPopulated;
+}
 
 // This is not a simple object in prisma after running that generate command it gives us this type
 export const participantPopulated =
