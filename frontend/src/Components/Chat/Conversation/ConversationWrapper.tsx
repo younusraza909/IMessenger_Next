@@ -23,7 +23,10 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
   console.log("Here is the data", conversationData);
   return (
     <Box width={{ base: "100%", md: "400px" }} bg="whiteAlpha.50" py={6} px={3}>
-      <ConversationList session={session} />
+      <ConversationList
+        session={session}
+        conversations={conversationData?.conversations || []}
+      />
     </Box>
   );
 };
