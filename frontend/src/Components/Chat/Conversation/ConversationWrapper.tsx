@@ -6,6 +6,7 @@ import ConversationOperations from "../../../graphql/operations/conversation";
 import { ConversationData } from "@/src/util/types";
 import { ConversationPopulated } from "@/../backend/src/util/types";
 import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 interface ConversationWrapperProps {
   session: Session;
@@ -27,6 +28,29 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
     ConversationOperations.Queries.conversation
   );
 
+  console.log("Query Data", conversationData);
+
+  const router = useRouter();
+
+  const {
+    query: { conversationId },
+  } = router;
+
+  const onViewConversation = async (conversationId: string) => {
+    /**
+     * 1 - Push the conversation Id to the next router
+     */
+
+    router.push({
+      query: {
+        conversationId,
+      },
+    });
+    /**
+     * 2 -Mark View if not
+     */
+  };
+
   const subscribeToMoreConversation = () => {
     subscribeToMore({
       document: ConversationOperations.Subscription.conversationCreated,
@@ -40,7 +64,11 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
           };
         }
       ) => {
+        console.log("Prev Conversation", prev);
+        console.log("subscriptionData1", subscriptionData);
         if (!subscriptionData.data) return prev;
+
+        console.log("subscriptionData2", subscriptionData);
 
         const newConversation = subscriptionData.data.conversationCreated;
         return Object.assign({}, prev, {
@@ -53,13 +81,18 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
   useEffect(() => {
     subscribeToMoreConversation();
   }, []);
-
-  console.log("Here is the data", conversationData);
   return (
-    <Box width={{ base: "100%", md: "400px" }} bg="whiteAlpha.50" py={6} px={3}>
+    <Box
+      width={{ base: "100%", md: "400px" }}
+      display={{ base: conversationId ? "none" : "flex", md: "flex" }}
+      bg="whiteAlpha.50"
+      py={6}
+      px={3}
+    >
       <ConversationList
         session={session}
         conversations={conversationData?.conversations || []}
+        onViewConversation={onViewConversation}
       />
     </Box>
   );
