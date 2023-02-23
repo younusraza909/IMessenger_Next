@@ -3,7 +3,11 @@ import { ApolloError } from "apollo-server-core";
 import { Prisma } from "@prisma/client";
 
 const resolvers = {
-  Query: {},
+  Query: {
+    conversations: async (_: any, __: any, context: GraphQlContext) => {
+      console.log("Convseration Query");
+    },
+  },
   Mutation: {
     createConversation: async (
       _: any,
