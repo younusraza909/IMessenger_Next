@@ -11,6 +11,10 @@ const typeDefs = gql`
     createConversation(participantIds: [String]): CreatConversationResponse
   }
 
+  type Subscription {
+    conversationCreated: Conversation
+  }
+
   type CreatConversationResponse {
     conversationId: String
   }

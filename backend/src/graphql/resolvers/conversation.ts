@@ -58,7 +58,7 @@ const resolvers = {
       args: { participantIds: [String] },
       context: GraphQlContext
     ): Promise<{ conversationId: String }> => {
-      const { session, prisma } = context;
+      const { session, prisma, pubsub } = context;
       const { participantIds } = args;
 
       if (!session?.user) {
@@ -85,7 +85,9 @@ const resolvers = {
         });
 
         // emit a CONVERSATION_CREATED event using pub_sub
-
+        pubsub.publish("CONVERSATION_CREATED", {
+          conversationCreated: conversation,
+        });
         return {
           conversationId: conversation.id,
         };
@@ -93,6 +95,15 @@ const resolvers = {
         console.log("Create Conversation Error", error);
         throw new ApolloError("Error creating conversation");
       }
+    },
+  },
+  Subscription: {
+    conversationCreated: {
+      subscribe: (_: any, __: any, context: GraphQlContext) => {
+        let { pubsub } = context;
+
+        pubsub.asyncIterator("CONVERSATION_CREATED");
+      },
     },
   },
 };
