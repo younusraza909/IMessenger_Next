@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { OperationVariables, useQuery } from "@apollo/client";
 import { Box } from "@chakra-ui/react";
 import { Session } from "next-auth";
 import ConversationList from "./ConversationList";
@@ -9,6 +9,10 @@ interface ConversationWrapperProps {
   session: Session;
 }
 
+interface ConversationQueryVariables extends OperationVariables {
+  variables: null;
+}
+
 const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
   session,
 }) => {
@@ -16,7 +20,7 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
     data: conversationData,
     error: conversationError,
     loading: conversationLoadin,
-  } = useQuery<ConversationData, null>(
+  } = useQuery<ConversationData, ConversationQueryVariables>(
     ConversationOperations.Queries.conversation
   );
 
