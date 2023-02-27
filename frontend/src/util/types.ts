@@ -55,3 +55,10 @@ export interface MessagesData {
 export interface MessagesVariables {
   conversationId: string;
 }
+
+export interface SendMessageVariables {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  body: string;
+}

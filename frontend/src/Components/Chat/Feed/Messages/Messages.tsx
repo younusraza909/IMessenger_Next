@@ -23,6 +23,10 @@ const Message: React.FC<MessagesProps> = ({ userId, conversationId }) => {
     },
   });
 
+  if (error) {
+    return null;
+  }
+
   return (
     <Flex direction="column" justify="flex-end" overflow="hidden">
       {loading && (
