@@ -26,7 +26,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
   return (
     <Box px={4} width="100%">
-      Here is the input
       <form onSubmit={() => {}}>
         <Input
           placeholder="New Message"
