@@ -1,3 +1,4 @@
+import SkeletonLoader from "@/src/Components/common/SkeletonLoader";
 import { MessagesData, MessagesVariables } from "@/src/util/types";
 import { useQuery } from "@apollo/client";
 import { Flex, Stack } from "@chakra-ui/react";
@@ -25,8 +26,8 @@ const Message: React.FC<MessagesProps> = ({ userId, conversationId }) => {
   return (
     <Flex direction="column" justify="flex-end" overflow="hidden">
       {loading && (
-        <Stack>
-          <span>LOADING MESSAGE</span>
+        <Stack spacing={4} px={4}>
+          <SkeletonLoader count={4} height="60px" />
         </Stack>
       )}
       {data?.messages && (
