@@ -62,3 +62,11 @@ export interface SendMessageVariables {
   senderId: string;
   body: string;
 }
+
+export interface MessagesSubscriptionData {
+  subscriptionData: {
+    data: {
+      messageSent: MessagePopulated;
+    };
+  };
+}

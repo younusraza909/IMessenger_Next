@@ -1,7 +1,12 @@
 import SkeletonLoader from "@/src/Components/common/SkeletonLoader";
-import { MessagesData, MessagesVariables } from "@/src/util/types";
+import {
+  MessagesData,
+  MessagesSubscriptionData,
+  MessagesVariables,
+} from "@/src/util/types";
 import { useQuery } from "@apollo/client";
 import { Flex, Stack } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 import MessageOperations from "../../../../graphql/operations/message";
 
@@ -22,6 +27,33 @@ const Message: React.FC<MessagesProps> = ({ userId, conversationId }) => {
       toast.error(message);
     },
   });
+
+  const subscribeToMoreMessages = (conversationId: string) => {
+    return subscribeToMore({
+      document: MessageOperations.Subscriptions.messageSent,
+      variables: {
+        conversationId,
+      },
+      updateQuery: (prev, { subscriptionData }: MessagesSubscriptionData) => {
+        if (!subscriptionData.data) return prev;
+
+        const newMessage = subscriptionData.data.messageSent;
+
+        return Object.assign({}, prev, {
+          messages:
+            newMessage.sender.id === userId
+              ? prev.messages
+              : [newMessage, ...prev.messages],
+        });
+      },
+    });
+  };
+
+  useEffect(() => {
+    const unsubscribe = subscribeToMoreMessages(conversationId);
+
+    return () => unsubscribe();
+  }, [conversationId]);
 
   if (error) {
     return null;
