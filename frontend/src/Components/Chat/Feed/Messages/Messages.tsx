@@ -1,9 +1,48 @@
-import { Flex } from "@chakra-ui/react";
+import { MessagesData, MessagesVariables } from "@/src/util/types";
+import { useQuery } from "@apollo/client";
+import { Flex, Stack } from "@chakra-ui/react";
+import { toast } from "react-hot-toast";
+import MessageOperations from "../../../../graphql/operations/message";
 
-interface MessagesProps {}
+interface MessagesProps {
+  userId: string;
+  conversationId: string;
+}
 
-const Message: React.FC<MessagesProps> = () => {
-  return <Flex direction="column" justify="flex-end" overflow="hidden"></Flex>;
+const Message: React.FC<MessagesProps> = ({ userId, conversationId }) => {
+  const { data, loading, error, subscribeToMore } = useQuery<
+    MessagesData,
+    MessagesVariables
+  >(MessageOperations.Query.messages, {
+    variables: {
+      conversationId,
+    },
+    onError: ({ message }) => {
+      toast.error(message);
+    },
+  });
+
+  return (
+    <Flex direction="column" justify="flex-end" overflow="hidden">
+      {loading && (
+        <Stack>
+          <span>LOADING MESSAGE</span>
+        </Stack>
+      )}
+      {data?.messages && (
+        <Flex direction="column-reverse" overflowY="scroll" height="100%">
+          {data.messages.map((message) => (
+            // <MessageItem
+            //   key={message.id}
+            //   message={message}
+            //   sentByMe={message.sender.id === userId}
+            // />
+            <div>{message?.body}</div>
+          ))}
+        </Flex>
+      )}
+    </Flex>
+  );
 };
 
 export default Message;
