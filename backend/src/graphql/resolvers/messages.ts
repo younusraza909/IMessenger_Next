@@ -181,14 +181,14 @@ const resolvers = {
         (_: any, __: any, context: GraphQlContext) => {
           const { pubsub } = context;
 
-          return pubsub.asyncIterator("MESSAGE_SENT");
+          return pubsub.asyncIterator(["MESSAGE_SENT"]);
         },
         (
           payload: messageSentSubscriptionPayload,
-          args: { coversationId: String },
+          args: { conversationId: string },
           context: GraphQlContext
         ) => {
-          return payload.messageSent.conversationId === args.coversationId;
+          return payload.messageSent.conversationId === args.conversationId;
         }
       ),
     },
