@@ -1,4 +1,4 @@
-import { SendMessageVariables } from "@/src/util/types";
+import { MessagesData, SendMessageVariables } from "@/src/util/types";
 import { useMutation } from "@apollo/client";
 import { Box, Input } from "@chakra-ui/react";
 import { Session } from "next-auth";
@@ -25,7 +25,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
   const onSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       // call send Message Mutation
       const { id: senderId } = session.user;
@@ -36,10 +35,48 @@ const MessageInput: React.FC<MessageInputProps> = ({
         conversationId,
         body: messageBody,
       };
+
+      setMessageBody('');
       const { data, errors } = await sendMessage({
         variables: {
           ...newMessage,
         },
+        optimisticResponse: {
+          sendMessage: true
+        },
+        //Due to optimistic rendering this function fire immediately after mutation is called
+        // else it is called after is get success from server
+        update: (cache) => {
+
+          const existing = cache.readQuery<MessagesData>({
+            query: MessageOperations.Query.messages,
+            variables: { conversationId },
+          }) as MessagesData;
+
+          cache.writeQuery<MessagesData, { conversationId: string }>({
+            query: MessageOperations.Query.messages,
+            variables: { conversationId },
+            data: {
+              ...existing,
+              messages: [
+                {
+                  id: newId,
+                  body: messageBody,
+                  senderId: session.user.id,
+                  conversationId,
+                  sender: {
+                    id: session.user.id,
+                    username: session.user.username,
+                  },
+                  createdAt: new Date(Date.now()),
+                  updatedAt: new Date(Date.now()),
+                },
+                ...existing.messages,
+              ],
+            },
+          });
+
+        }
       });
 
       if (!data?.sendMessage || errors) {
@@ -58,6 +95,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
           placeholder="New Message"
           size="md"
           resize="none"
+          value={messageBody}
           onChange={(e) => setMessageBody(e.target.value)}
           _focus={{
             boxShadow: "none",
