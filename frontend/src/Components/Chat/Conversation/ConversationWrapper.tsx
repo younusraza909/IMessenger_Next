@@ -1,9 +1,15 @@
-import { gql, OperationVariables, useMutation, useQuery } from "@apollo/client";
+import {
+  gql,
+  OperationVariables,
+  useMutation,
+  useQuery,
+  useSubscription,
+} from "@apollo/client";
 import { Box } from "@chakra-ui/react";
 import { Session } from "next-auth";
 import ConversationList from "./ConversationList";
 import ConversationOperations from "../../../graphql/operations/conversation";
-import { ConversationData } from "@/src/util/types";
+import { ConversationData, ConversationUpdatedData } from "@/src/util/types";
 import {
   ConversationPopulated,
   ParticipantPopulated,
@@ -23,6 +29,7 @@ interface ConversationQueryVariables extends OperationVariables {
 const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
   session,
 }) => {
+  // Use Query
   const {
     data: conversationData,
     error: conversationError,
@@ -32,10 +39,34 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
     ConversationOperations.Queries.conversation
   );
 
+  // Use Mutation
   const [markConversationAsRead] = useMutation<
     { markConversationAsRead: true },
     { userId: string; conversationId: string }
   >(ConversationOperations.Mutations.markConversationAsRead);
+
+  // Use Seubscription
+  useSubscription<ConversationUpdatedData, null>(
+    ConversationOperations.Subscription.conversationUpdated,
+    {
+      onData: ({ client, data }) => {
+        const { data: subscriptionData } = data;
+
+        if (!subscriptionData) return;
+
+        const {
+          conversationUpdated: { conversation: updatedConversation },
+        } = subscriptionData;
+
+        const currentlyViewinigConversation =
+          updatedConversation.id === conversationId;
+
+        if (currentlyViewinigConversation) {
+          onViewConversation(conversationId, false);
+        }
+      },
+    }
+  );
 
   console.log("Query Data", conversationData);
 
