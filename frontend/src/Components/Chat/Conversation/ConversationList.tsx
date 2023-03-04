@@ -32,6 +32,12 @@ const ConversationList: React.FC<ConversationListProps> = ({
     user: { id: userId },
   } = session;
 
+  const sortedConversation = [
+    ...conversations.sort(
+      (a, b) => b.updatedAt.valueOf() - a.updatedAt.valueOf()
+    ),
+  ];
+
   return (
     <Box width="100%">
       <Box
@@ -49,7 +55,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
       </Box>
       <ConversationModal isOpen={isOpen} onClose={onClose} session={session} />
 
-      {conversations.map((conv) => {
+      {sortedConversation.map((conv) => {
         let participants = conv.participants.find(
           (p: ParticipantPopulated) => p.user.id === userId
         );

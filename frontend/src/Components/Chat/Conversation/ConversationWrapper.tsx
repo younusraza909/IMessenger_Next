@@ -29,6 +29,16 @@ interface ConversationQueryVariables extends OperationVariables {
 const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
   session,
 }) => {
+  const router = useRouter();
+
+  const {
+    user: { id: userId },
+  } = session;
+
+  const {
+    query: { conversationId },
+  } = router;
+
   // Use Query
   const {
     data: conversationData,
@@ -67,18 +77,6 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
       },
     }
   );
-
-  console.log("Query Data", conversationData);
-
-  const router = useRouter();
-
-  const {
-    user: { id: userId },
-  } = session;
-
-  const {
-    query: { conversationId },
-  } = router;
 
   const onViewConversation = async (
     conversationId: string,
