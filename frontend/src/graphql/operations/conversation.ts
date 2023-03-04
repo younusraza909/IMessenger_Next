@@ -41,6 +41,12 @@ export default {
         markConversationAsRead(conversationId: $conversationId, userId: $userId)
       }
     `,
+
+    deleteConversation: gql`
+      mutation deleteConversation($conversationId: String!) {
+        deleteConversation(conversationId: $conversationId)
+      }
+    `,
   },
   Subscription: {
     conversationCreated: gql`
@@ -59,5 +65,12 @@ export default {
     }
   }
 `,
+    conversationDeleted: gql`
+      subscription ConversationDeleted {
+        conversationDeleted {
+          id
+        }
+      }
+    `,
   },
 };

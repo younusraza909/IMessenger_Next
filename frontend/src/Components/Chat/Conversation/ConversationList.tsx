@@ -2,10 +2,14 @@ import {
   ConversationPopulated,
   ParticipantPopulated,
 } from "@/../backend/src/util/types";
-import { Box, Text } from "@chakra-ui/react";
+import conversation from "@/src/graphql/operations/conversation";
+import { useMutation } from "@apollo/client";
+import { Box, Button, Text } from "@chakra-ui/react";
 import { Session } from "next-auth";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { signOut } from "next-auth/react";
+import { toast } from "react-hot-toast";
 import ConversationItem from "./ConversationItem";
 import ConversationModal from "./ConversationModal/ConversationModal";
 
@@ -23,6 +27,11 @@ const ConversationList: React.FC<ConversationListProps> = ({
   onViewConversation,
   conversations,
 }) => {
+  const [deleteConversation] = useMutation<
+    { deleteConversation: boolean },
+    { conversationId: string }
+  >(conversation.Mutations.deleteConversation);
+
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const onOpen = () => setIsOpen(true);
@@ -38,8 +47,34 @@ const ConversationList: React.FC<ConversationListProps> = ({
     ),
   ];
 
+  const onDeleteConversation = async (conversationId: string) => {
+    try {
+      toast.promise(
+        deleteConversation({
+          variables: {
+            conversationId,
+          },
+          update: () => {
+            router.replace(
+              typeof process.env.NEXT_PUBLIC_BASE_URL === "string"
+                ? process.env.NEXT_PUBLIC_BASE_URL
+                : ""
+            );
+          },
+        }),
+        {
+          loading: "Deleting conversation",
+          success: "Conversation deleted",
+          error: "Failed to delete conversation",
+        }
+      );
+    } catch (error) {
+      console.log("onDeleteConversation error", error);
+    }
+  };
+
   return (
-    <Box width="100%">
+    <Box width="100%" overflow="hidden" position="relative" height="100%">
       <Box
         py={2}
         px={4}
@@ -70,9 +105,25 @@ const ConversationList: React.FC<ConversationListProps> = ({
             hasSeenLatestMessage={participants.hasSeenLatestMessage}
             isSelected={conv.id === router.query.conversationId}
             userId={userId}
+            onDeleteConversation={onDeleteConversation}
           />
         );
       })}
+
+      <Box
+        position="absolute"
+        bottom={0}
+        left={0}
+        width="100%"
+        bg="#313131"
+        px={8}
+        py={6}
+        zIndex={1}
+      >
+        <Button width="100%" onClick={() => signOut()}>
+          Logout
+        </Button>
+      </Box>
     </Box>
   );
 };

@@ -9,7 +9,12 @@ import { Box } from "@chakra-ui/react";
 import { Session } from "next-auth";
 import ConversationList from "./ConversationList";
 import ConversationOperations from "../../../graphql/operations/conversation";
-import { ConversationData, ConversationUpdatedData } from "@/src/util/types";
+import {
+  ConversationData,
+  ConversationDeletedData,
+  ConversationsData,
+  ConversationUpdatedData,
+} from "@/src/util/types";
 import {
   ConversationPopulated,
   ParticipantPopulated,
@@ -196,6 +201,37 @@ const ConversationWrapper: React.FC<ConversationWrapperProps> = ({
       },
     });
   };
+
+  useSubscription<ConversationDeletedData, null>(
+    ConversationOperations.Subscription.conversationDeleted,
+    {
+      onData: ({ client, data }) => {
+        const { data: subscriptionData } = data;
+
+        if (!subscriptionData) return;
+
+        const existing = client.readQuery<ConversationsData>({
+          query: ConversationOperations.Queries.conversation,
+        });
+
+        if (!existing) return;
+
+        const { conversations } = existing;
+        const {
+          conversationDeleted: { id: deletedConversationId },
+        } = subscriptionData;
+
+        client.writeQuery<ConversationsData>({
+          query: ConversationOperations.Queries.conversation,
+          data: {
+            conversations: conversations.filter(
+              (conversation) => conversation.id !== deletedConversationId
+            ),
+          },
+        });
+      },
+    }
+  );
 
   useEffect(() => {
     subscribeToMoreConversation();

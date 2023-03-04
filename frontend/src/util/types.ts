@@ -76,3 +76,13 @@ export interface MessagesSubscriptionData {
     };
   };
 }
+
+export interface ConversationDeletedData {
+  conversationDeleted: {
+    id: string;
+  };
+}
+
+export interface ConversationsData {
+  conversations: Array<ConversationPopulated>;
+}
