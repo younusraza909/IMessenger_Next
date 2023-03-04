@@ -3,6 +3,11 @@ import gql from "graphql-tag";
 const typeDefs = gql`
   # graphql does not support date type out of the box
   scalar Date
+
+  type ConversationDeletedResponse {
+    id: String
+  }
+
   type Query {
     conversations: [Conversation]
   }
@@ -15,6 +20,10 @@ const typeDefs = gql`
     markConversationAsRead(conversationId: String!, userId: String!): Boolean
   }
 
+  type Mutation {
+    deleteConversation(conversationId: String!): Boolean
+  }
+
   type Subscription {
     conversationCreated: Conversation
   }
@@ -23,6 +32,9 @@ const typeDefs = gql`
     conversationUpdated: conversationUpdatedSubscriptionPayload
   }
 
+  type Subscription {
+    conversationDeleted: ConversationDeletedResponse
+  }
   type CreatConversationResponse {
     conversationId: String
   }

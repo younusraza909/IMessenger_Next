@@ -57,6 +57,10 @@ export type ParticipantPopulated = Prisma.ConversationParticipantGetPayload<{
   include: typeof participantPopulated;
 }>;
 
+export interface ConversationDeletedSubscriptionPayload {
+  conversationDeleted: ConversationPopulated;
+}
+
 /**
  * Messages
  */
